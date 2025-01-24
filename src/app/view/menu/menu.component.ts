@@ -1,12 +1,16 @@
-import { Component } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { HeaderComponent } from "../../layouts/header/header.component";
 import { SearchBarComponent } from "./components/search-bar/search-bar.component";
 import { CardComponent } from "./components/card/card.component";
+import { BackendServiceService } from "../../services/backend-service.service";
+import { CoffeeReturnDTO } from "../../interface/coffes";
+import { catchError, Observable, tap, throwError } from "rxjs";
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: "app-menu",
   standalone: true,
-  imports: [HeaderComponent, SearchBarComponent, CardComponent],
+  imports: [HeaderComponent, SearchBarComponent, CardComponent, AsyncPipe],
   template: `
     <!-- Header -->
     <section>
@@ -64,8 +68,11 @@ import { CardComponent } from "./components/card/card.component";
 
             <!-- Caffes Grid -->
             <div class="grid grid-cols-2 gap-4">
-              <app-card></app-card>
-              <app-card></app-card>
+              @if (coffes$ | async; as coffes) {
+                @for (item of coffes; track $index) {
+                  <app-card></app-card>
+                }
+              }
             </div>
           </div>
 
@@ -110,4 +117,22 @@ import { CardComponent } from "./components/card/card.component";
   `,
   styles: ``,
 })
-export class MenuComponent {}
+export class MenuComponent implements OnInit {
+  backendService = inject(BackendServiceService);
+  coffes$!: Observable<CoffeeReturnDTO[] | null>; ;
+
+  constructor() {}
+
+  //Carga los cafes
+  ngOnInit() {
+    this.coffes$ = this.backendService
+      .getProductsByCategory("cafe")
+      .pipe(
+        tap((coffes) => console.log("Cafes cargados:", coffes)),
+        catchError((error) => {
+          console.error("Error loading coffes", error);
+          return throwError(() => new Error("Failed to load coffes"));
+        })
+      );
+  }
+}

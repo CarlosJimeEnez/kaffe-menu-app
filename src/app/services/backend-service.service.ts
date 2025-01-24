@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { UserReturnDTO } from '../interface/usuario';
 import { OrderReturnDTO } from '../interface/order';
+import { CoffeeReturnDTO } from '../interface/coffes';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,18 @@ export class BackendServiceService {
   private baseUrl = 'http://localhost:5050/';
   private loginUrl = 'users/'
   private orderUrl = 'orders/'
+  private productUrl = 'products/'
 
   constructor(private _http: HttpClient) { }
+
+  getProductsByCategory(category: string) : Observable<CoffeeReturnDTO[]> {
+    return this._http.get<CoffeeReturnDTO[]>(`${this.baseUrl}${this.productUrl}products/${category}`).pipe(
+      catchError((error) => {
+        console.error('Error getting products list', error);
+        return throwError(() => new Error('Failed to get products list'));
+      })
+    );
+  }
 
   //Crea un usuario invitado
   addGuestUser() : Observable<UserReturnDTO>{
