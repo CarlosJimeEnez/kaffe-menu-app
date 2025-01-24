@@ -2,8 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 @layer base {
     :root {
+        font-family: 'Montserrat', sans-serif;
       --text-50: #f2f2f2;
       --text-100: #e6e6e6;
       --text-200: #cccccc;
@@ -127,5 +130,6 @@
       --accent-950: #fbf2e9;
       
     }
+
+    
   }
-  
