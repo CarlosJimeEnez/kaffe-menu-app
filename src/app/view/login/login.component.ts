@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { BackendServiceService } from '../../services/backend-service.service';
 import { UserReturnDTO } from '../../interface/usuario';
-import { Observable, switchMap, map, catchError, throwError } from 'rxjs';
+import { Observable, switchMap, map, catchError, throwError, tap, takeUntil, Subject } from 'rxjs';
+import { UserWithOrder } from '../../interface/userWithOrder';
 
 @Component({
   selector: 'app-login',
@@ -33,10 +34,11 @@ import { Observable, switchMap, map, catchError, throwError } from 'rxjs';
   styles: ``
 })
 
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
   router = inject(Router);
   backendService = inject(BackendServiceService);
-  combinedData$!: Observable<any | null>;
+  combinedData$!: Observable<UserWithOrder | null>;
+  destroy$ = new Subject<void>();
 
   user$!: UserReturnDTO | null;
 
@@ -45,14 +47,32 @@ export class LoginComponent {
   //Crea un usuario invitado
   navigateToMenu() {
     this.combinedData$ = this.backendService.addGuestUser().pipe(
+
+      tap(user => console.log('Usuario creado:', user)),
+
       switchMap(user => this.backendService.addOrder(user).pipe(
-        map(order => ({ user, order }))
-      ))
-    ), 
-    catchError(error => {
-      console.error('Error creating guest user', error);
-      return throwError(() => new Error('Failed to create guest user'));
+        map(order => ({ user, order })),
+
+        tap(combined => {
+          console.log('Datos combinados:', combined);
+          this.router.navigate(['/menu']);
+        }),
+      )),
+    ),
+      catchError(error => {
+        console.error('Error creating order', error);
+        return throwError(() => new Error('Failed to create order'));
+      })
+
+    this.combinedData$.pipe(takeUntil(this.destroy$)).subscribe(combined => {
+      console.log('Datos combinados:', combined);
+      
     })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

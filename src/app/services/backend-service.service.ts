@@ -24,10 +24,11 @@ export class BackendServiceService {
   }
 
   addOrder(usuario: UserReturnDTO): Observable<OrderReturnDTO> {
-    return this._http.post<OrderReturnDTO>(`${this.baseUrl}${this.orderUrl}addOrder`, { usuario }).pipe(
+    console.warn(usuario);
+    return this._http.post<OrderReturnDTO>(`${this.baseUrl}${this.orderUrl}addOrder`,usuario ).pipe(
       catchError((error) => {
-        console.error('Error creating guest user', error);
-        return throwError(() => new Error('Failed to create guest user'));
+        console.error('Error creating order', error);
+        return throwError(() => new Error('Failed to create order'));
       })
     );
   }
