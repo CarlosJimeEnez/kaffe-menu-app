@@ -1,5 +1,5 @@
 export interface UserReturnDTO {
-    id: number
-    guest: boolean
-    uuid: string
+    Id: number
+    Guest: boolean
+    Uuid: string
 }
