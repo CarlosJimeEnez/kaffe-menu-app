@@ -44,7 +44,7 @@ export class LoginComponent implements OnDestroy {
 
   constructor() { }
 
-  //Crea un usuario invitado
+  //Crea un usuario y una orden asociada
   navigateToMenu() {
     this.combinedData$ = this.backendService.addGuestUser().pipe(
 

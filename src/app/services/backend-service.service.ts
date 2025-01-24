@@ -14,6 +14,7 @@ export class BackendServiceService {
 
   constructor(private _http: HttpClient) { }
 
+  //Crea un usuario invitado
   addGuestUser() : Observable<UserReturnDTO>{
     return this._http.post<UserReturnDTO>(`${this.baseUrl}${this.loginUrl}addGuest`, {}).pipe(
       catchError((error) => {
@@ -23,9 +24,10 @@ export class BackendServiceService {
     );
   }
 
-  addOrder(usuario: UserReturnDTO): Observable<OrderReturnDTO> {
-    console.warn(usuario);
-    return this._http.post<OrderReturnDTO>(`${this.baseUrl}${this.orderUrl}addOrder`,usuario ).pipe(
+  //Crea un orden para un usuario
+  addOrder(user: UserReturnDTO): Observable<OrderReturnDTO> {
+    const userId = user.Id;
+    return this._http.post<OrderReturnDTO>(`${this.baseUrl}${this.orderUrl}addOrder`, userId).pipe(
       catchError((error) => {
         console.error('Error creating order', error);
         return throwError(() => new Error('Failed to create order'));
