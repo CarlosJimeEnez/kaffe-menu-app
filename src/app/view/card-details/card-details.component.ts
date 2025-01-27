@@ -1,11 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CoffeeReturnDTO } from '../../interface/coffes';
+import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.component";
 
 @Component({
   selector: 'app-card-details',
   standalone: true,
-  imports: [],
+  imports: [BadgeCustomComponent],
   template: `
     @if (coffee) {
       <section>
@@ -28,7 +29,18 @@ import { CoffeeReturnDTO } from '../../interface/coffes';
               <hr class="my-3 border-t border-gray-200">
 
               <section>
+              <div class="flex items-center justify-start gap-3">
                 <h2 class="text-2xl font-bold">Tamaño</h2>
+                <app-badge-custom [texto$]="'requerido'"></app-badge-custom>
+              </div>   
+              
+              @for (item of coffee.Prices; track $index) {
+                <div class="flex justify-between border-b-2  py-5 ">
+                  <h5 class="mx-3">{{item.Size}}</h5>
+                  <h5 class="mx-4">{{item.Price}}</h5>
+                </div>
+               }    
+
               </section>
 
             </div>
