@@ -17,7 +17,7 @@ export class BackendServiceService {
   constructor(private _http: HttpClient) { }
 
   getProductsByCategory(category: string) : Observable<CoffeeReturnDTO[]> {
-    return this._http.get<CoffeeReturnDTO[]>(`${this.baseUrl}${this.productUrl}products/${category}`).pipe(
+    return this._http.get<CoffeeReturnDTO[]>(`${this.baseUrl}${this.productUrl}${category}`).pipe(
       catchError((error) => {
         console.error('Error getting products list', error);
         return throwError(() => new Error('Failed to get products list'));

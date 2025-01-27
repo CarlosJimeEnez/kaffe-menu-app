@@ -6,11 +6,12 @@ import { BackendServiceService } from "../../services/backend-service.service";
 import { CoffeeReturnDTO } from "../../interface/coffes";
 import { catchError, Observable, tap, throwError } from "rxjs";
 import { AsyncPipe } from '@angular/common';
+import { BadgeComponent } from "./components/badge/badge.component";
 
 @Component({
   selector: "app-menu",
   standalone: true,
-  imports: [HeaderComponent, SearchBarComponent, CardComponent, AsyncPipe],
+  imports: [HeaderComponent, SearchBarComponent, CardComponent, AsyncPipe, BadgeComponent],
   template: `
     <!-- Header -->
     <section>
@@ -19,7 +20,7 @@ import { AsyncPipe } from '@angular/common';
 
     <div class="min-h-screen bg-background-50">
       <section>
-        <div class="max-w-3xl mx-auto p-4">
+        <div class="max-w-5xl mx-auto p-4">
           <div class="flex justify-between items-center mb-6">
             <div class="w-3/4">
               <h1 class="text-5xl font-bold ">
@@ -38,26 +39,9 @@ import { AsyncPipe } from '@angular/common';
 
           <!-- Categories -->
           <div class="flex gap-4 mb-6 overflow-x-auto py-2">
-            <button
-              class="px-4 py-2 bg-accent-500 text-white hover:bg-accent-600 rounded-full text-lg whitespace-nowrap "
-            >
-              Todos
-            </button>
-            <button
-              class="px-4 py-2 bg-white text-gray-600 hover:bg-accent-600 hover:text-white rounded-full text-lg whitespace-nowrap"
-            >
-              Desarrollo
-            </button>
-            <button
-              class="px-4 py-2 bg-white text-gray-600 hover:bg-accent-600 hover:text-white rounded-full text-lg whitespace-nowrap"
-            >
-              Desarrollo
-            </button>
-            <button
-              class="px-4 py-2 bg-white text-gray-600 hover:bg-accent-600 hover:text-white rounded-full text-lg whitespace-nowrap"
-            >
-              Desarrollo
-            </button>
+            <app-badge [text$]="'Todos'"></app-badge>
+            <app-badge [text$]="'Desarrollo'"></app-badge>
+            <app-badge [text$]="'Diseño'"></app-badge>
           </div>
 
           <!-- Todos cafes -->
@@ -67,11 +51,13 @@ import { AsyncPipe } from '@angular/common';
             </div>
 
             <!-- Caffes Grid -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
               @if (coffes$ | async; as coffes) {
                 @for (item of coffes; track $index) {
-                  <app-card></app-card>
+                  <app-card [coffee$]="item"></app-card>
                 }
+              } @else {
+                <p>No coffes found</p>
               }
             </div>
           </div>
