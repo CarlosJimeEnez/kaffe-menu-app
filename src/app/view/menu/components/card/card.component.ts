@@ -1,5 +1,6 @@
-import { Component, input } from "@angular/core";
+import { Component, inject, input } from "@angular/core";
 import { CoffeeReturnDTO } from "../../../../interface/coffes";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-card",
@@ -7,7 +8,7 @@ import { CoffeeReturnDTO } from "../../../../interface/coffes";
   imports: [],
   template: `
     <section class="">
-      <div class="bg-white rounded-xl shadow-md p-4 hover:bg-background-100">
+      <div (click)="navigateToCoffee()" class="bg-white rounded-xl shadow-md p-4 hover:bg-background-100">
         <img class="object-cover w-full h-32 rounded-lg mb-3" src="" alt="imagen cafe">
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-xl text-text-700">{{coffee$().Name}}</h3>
@@ -18,7 +19,7 @@ import { CoffeeReturnDTO } from "../../../../interface/coffes";
           </p>
           </div>
         </div>
-        <h5 class="text-md text-text-400">{{coffee$().Description }}</h5>
+        <h5 class="text-md text-text-400 h-12 overflow-hidden">{{coffee$().Description }}</h5>
         <div class="flex justify-between items-center mt-2">
           <span class="font-medium text-accent-500">{{coffee$().Prices[0].Price }} mxm</span>
           <button class="px-4 py-2 bg-accent-500 text-white rounded-lg text-md hover:bg-accent-700">Add</button>
@@ -30,4 +31,11 @@ import { CoffeeReturnDTO } from "../../../../interface/coffes";
 })
 export class CardComponent {
   coffee$ = input.required<CoffeeReturnDTO>();
+  router = inject(Router);
+
+  navigateToCoffee() {
+    this.router.navigate(['/card-details'], {
+      state: { data: this.coffee$() }
+    });
+  }
 }
