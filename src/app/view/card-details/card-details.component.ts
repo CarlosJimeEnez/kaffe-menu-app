@@ -1,14 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CoffeeReturnDTO } from '../../interface/coffes';
 import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.component";
 import { FormBuilder, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductPrice } from '../../interface/productPrice';
+import { CantidadWidgetComponent } from "./components/cantidad-widget/cantidad-widget.component";
 @Component({
   selector: 'app-card-details',
   standalone: true,
-  imports: [BadgeCustomComponent, ReactiveFormsModule],
+  imports: [BadgeCustomComponent, ReactiveFormsModule, CantidadWidgetComponent],
   template: `
     @if (coffee) {
       <section>
@@ -50,7 +51,10 @@ import { ProductPrice } from '../../interface/productPrice';
                 </form>
                 <hr class="my-3 border-t-2 border-gray-400">
                 
-                
+                <h2 class="text-2xl font-bold">Cantidad</h2>
+
+                <app-cantidad-widget [initialQuantity$]="this.quantity$()" (quantityChange$)="onQuantityChange($event)"></app-cantidad-widget>
+
               </section>    
             </div>
             <div class="flex flex-row w-full justify-around  items-end flex-grow">
@@ -80,6 +84,8 @@ export class CardDetailsComponent {
   coffee: CoffeeReturnDTO | null = null;
   formBuilder = inject(FormBuilder)
   required: boolean = false
+  quantity$ = signal<number>(1);
+
   coffeForm = this.formBuilder.group({
     size: ['', Validators.required],
     price: [0, Validators.required],
@@ -104,6 +110,10 @@ export class CardDetailsComponent {
       price: item.Price,
       product: item.id
     });
+  }
+
+  onQuantityChange(quantity: number) {
+    this.quantity$.set(quantity);
   }
 
   onSubmitProduct() {
