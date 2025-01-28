@@ -5,7 +5,8 @@ import { Component, input } from '@angular/core';
   standalone: true,
   imports: [],
   template: `
-  <span class="bg-accent-500 text-text-600 text-xs font-bold me-2 px-2.5 py-0.5 rounded-md dark:bg-accent-50 dark:text-accent-700">
+  <span [class]="alertColor$() ? 'bg-red-100 text-red-700 text-xs font-bold me-2 px-2.5 py-0.5 rounded-md' : 
+    'bg-accent-100 text-text-700 text-xs font-bold me-2 px-2.5 py-0.5 rounded-md'">
     {{texto$()}}
   </span>
   `,
@@ -13,4 +14,5 @@ import { Component, input } from '@angular/core';
 })
 export class BadgeCustomComponent {
   texto$ = input.required<string>()
+  alertColor$ = input.required<boolean>()
 }

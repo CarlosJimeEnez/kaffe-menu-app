@@ -57,7 +57,7 @@ import { BadgeComponent } from "./components/badge/badge.component";
                   <app-card [coffee$]="item"></app-card>
                 }
               } @else {
-                <p>No coffes found</p>
+                <p>No se encontraron cafes</p>
               }
             </div>
           </div>

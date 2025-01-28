@@ -2,11 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CoffeeReturnDTO } from '../../interface/coffes';
 import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.component";
-
+import { FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ProductPrice } from '../../interface/productPrice';
 @Component({
   selector: 'app-card-details',
   standalone: true,
-  imports: [BadgeCustomComponent],
+  imports: [BadgeCustomComponent, ReactiveFormsModule],
   template: `
     @if (coffee) {
       <section>
@@ -18,7 +20,7 @@ import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.com
             </div>
           </section>
 
-          <section class="border col-span-1">
+          <section class=" col-span-1 border">
             <div class="py-5 mx-3">
               <h2 class="text-4xl font-bold">{{coffee.Name}}</h2>
               <h5 class="text-xl font-semibold text-gray-700">MXN: {{coffee.Prices[0].Price}}</h5>
@@ -26,25 +28,38 @@ import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.com
                 {{coffee.Description}}
               </p>
 
-              <hr class="my-3 border-t border-gray-200">
+              <hr class="my-3 border-t-2 border-gray-400">
 
               <section>
-              <div class="flex items-center justify-start gap-3">
-                <h2 class="text-2xl font-bold">Tamaño</h2>
-                <app-badge-custom [texto$]="'requerido'"></app-badge-custom>
-              </div>   
-              
-              @for (item of coffee.Prices; track $index) {
-                <div class="flex justify-between border-b-2  py-5 ">
-                  <h5 class="mx-3">{{item.Size}}</h5>
-                  <h5 class="mx-4">{{item.Price}}</h5>
-                </div>
-               }    
+                <div class="flex items-center justify-start gap-3">
+                  <h2 class="text-2xl font-bold">Tamaño</h2>
+                  <app-badge-custom [texto$]="'requerido'" [alertColor$]="required"></app-badge-custom>
+                </div>   
+                
+                <form (ngSubmit)="onSubmitProduct()" [formGroup]="coffeForm">  
+                @for (item of coffee.Prices; track $index) {
+                  <div class="flex justify-between  py-5 {{$index != coffee.Prices.length - 1 ? 'border-b' : ''}}" (click)="updateValue(item)">
+                    <div class="flex items-center">
+                      <input id="size-{{$index}}" type="radio" formControlName="size" value={{item.Size}} class="w-6 h-6" />
+                      <h5 class="mx-3">{{item.Size}}</h5>
+                    </div>
+                    <h5 class="mx-4">{{item.Price}}</h5>
+                  </div>
+                }    
 
-              </section>
-
+                </form>
+                <hr class="my-3 border-t-2 border-gray-400">
+                
+                
+              </section>    
             </div>
+            <div class="flex flex-row w-full justify-around  items-end flex-grow">
+                  <button (click)="onSubmitProduct()" class="mt-4 border rounded-lg p-5 bg-accent-500 text-white w-3/4 hover:bg-accent-600">
+                    <h3>Añadir a el carrito</h3>
+                  </button> 
+                </div>
           </section>
+          
         </div>
       </section>  
     } @else {
@@ -60,8 +75,16 @@ import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.com
   styles: ``
 })
 export class CardDetailsComponent {
+
   router = inject(Router)
   coffee: CoffeeReturnDTO | null = null;
+  formBuilder = inject(FormBuilder)
+  required: boolean = false
+  coffeForm = this.formBuilder.group({
+    size: ['', Validators.required],
+    price: [0, Validators.required],
+    product: [0, Validators.required]
+  })
 
   constructor() {
     const navigation = this.router.getCurrentNavigation();
@@ -75,4 +98,23 @@ export class CardDetailsComponent {
     this.router.navigate(['/menu']);
   }
 
+  updateValue(item: ProductPrice) {
+    this.coffeForm.patchValue({
+      size: item.Size,
+      price: item.Price,
+      product: item.id
+    });
+  }
+
+  onSubmitProduct() {
+    if (this.coffeForm.valid) {
+      console.log(this.coffeForm.value);
+    }
+    else {
+      this.required = true
+      this.coffeForm.markAllAsTouched();
+      console.log('Formulario no válido');
+      return;
+    }
+  }
 }
