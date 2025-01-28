@@ -27,12 +27,7 @@ export class BackendServiceService {
 
   //Crea un usuario invitado
   addGuestUser() : Observable<UserReturnDTO>{
-    return this._http.post<UserReturnDTO>(`${this.baseUrl}${this.loginUrl}addGuest`, {}).pipe(
-      catchError((error) => {
-        console.error('Error creating guest user', error);
-        return throwError(() => new Error('Failed to create guest user'));
-      })
-    );
+    return this._http.post<UserReturnDTO>(`${this.baseUrl}${this.loginUrl}addGuest`, {})
   }
 
   //Crea un orden para un usuario
