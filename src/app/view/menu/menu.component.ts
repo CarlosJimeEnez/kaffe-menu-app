@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject, OnInit, Type } from "@angular/core";
 import { HeaderComponent } from "../../layouts/header/header.component";
 import { SearchBarComponent } from "./components/search-bar/search-bar.component";
 import { CardComponent } from "./components/card/card.component";
@@ -7,11 +7,13 @@ import { CoffeeReturnDTO } from "../../interface/coffes";
 import { catchError, Observable, tap, throwError } from "rxjs";
 import { AsyncPipe } from '@angular/common';
 import { BadgeComponent } from "./components/badge/badge.component";
+import { ViewCardComponent } from "./components/view-card/view-card.component";
+import { UserWithOrderAndOrderDetail } from "../../interface/userWithOrderAndOrderDetail";
 
 @Component({
   selector: "app-menu",
   standalone: true,
-  imports: [HeaderComponent, SearchBarComponent, CardComponent, AsyncPipe, BadgeComponent],
+  imports: [HeaderComponent, SearchBarComponent, CardComponent, AsyncPipe, BadgeComponent, ViewCardComponent],
   template: `
     <!-- Header -->
     <section>
@@ -21,7 +23,8 @@ import { BadgeComponent } from "./components/badge/badge.component";
     <div class="min-h-screen bg-background-50">
       <section>
         <div class="max-w-5xl mx-auto p-4">
-          <div class="flex justify-between items-center mb-6">
+          
+        <!-- <div class="flex justify-between items-center mb-6">
             <div class="w-3/4">
               <h1 class="text-5xl font-bold ">
                 Elige el mejor
@@ -32,7 +35,7 @@ import { BadgeComponent } from "./components/badge/badge.component";
                 para ti
               </h1>
             </div>
-          </div>
+          </div> -->
 
           <!-- Search Bar -->
           <app-search-bar></app-search-bar>
@@ -61,6 +64,10 @@ import { BadgeComponent } from "./components/badge/badge.component";
               }
             </div>
           </div>
+
+          @if (cardItemSessionStorage !== null) {
+            <app-view-card [quantity$]="this.cardItemsList.length"></app-view-card>
+          }
 
           <!-- Best Matches Section -->
           <div>
@@ -106,7 +113,8 @@ import { BadgeComponent } from "./components/badge/badge.component";
 export class MenuComponent implements OnInit {
   backendService = inject(BackendServiceService);
   coffes$!: Observable<CoffeeReturnDTO[] | null>; ;
-
+  cardItemSessionStorage!: UserWithOrderAndOrderDetail | null;
+  cardItemsList: UserWithOrderAndOrderDetail[] = []
   constructor() {}
 
   //Carga los cafes
@@ -120,5 +128,25 @@ export class MenuComponent implements OnInit {
           return throwError(() => new Error("Failed to load coffes"));
         })
       );
+
+      const existingItems = sessionStorage.getItem('ListCardItems');
+      this.cardItemsList = existingItems ? JSON.parse(existingItems) : [];
+
+      // Obtener el nuevo item si existe
+      const cardItemsJSON = sessionStorage.getItem('userWithOrderAndOrderDetail');
+      this.cardItemSessionStorage = cardItemsJSON ? JSON.parse(cardItemsJSON) : null;
+
+      //Verificar si el item ya existe en la lista
+      if(this.cardItemSessionStorage){
+        const isDuplciated = this.cardItemsList.some(item => JSON.stringify(item) === JSON.stringify(this.cardItemSessionStorage))
+
+        if(!isDuplciated){
+          this.cardItemsList.push(this.cardItemSessionStorage)
+          sessionStorage.setItem('ListCardItems', JSON.stringify(this.cardItemsList))
+        }
+      };
+
+      console.log('ListCardItems', this.cardItemsList)
+      
   }
 }
