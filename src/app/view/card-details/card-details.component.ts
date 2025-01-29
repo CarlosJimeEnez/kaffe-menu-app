@@ -56,7 +56,7 @@ import { RequestStatus } from '../../interface/requestStatus';
           <section class=" col-span-1 ">
             <div class="py-5 mx-3">
               <h2 class="text-4xl font-bold">{{coffee.Name}}</h2>
-              <h5 class="text-xl font-semibold text-gray-700">MXN: {{coffee.Prices[0].Price}}</h5>
+              <h5 class="text-2xl font-bold text-gray-800">MXN: {{coffee.Prices[0].Price}}</h5>
               <p class="text-base font-normal text-gray-500">
                 {{coffee.Description}}
               </p>
