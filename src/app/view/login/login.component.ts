@@ -116,9 +116,13 @@ export class LoginComponent implements OnDestroy {
         this.backendService.addOrder(user).pipe(
           map((order) => ({ user, order })), // Combinar los datos del usuario y la orden
 
+          //Redirige a la pagina del menu
+          //Carga el usuario con su orden
           tap((combined) => {
             console.log("Datos combinados:", combined);
             this.setStatusSuccess();
+            sessionStorage.setItem("userWithOrder", JSON.stringify(combined));
+
             this.router.navigate(["/menu"]);
           })
         )

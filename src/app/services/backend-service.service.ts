@@ -4,6 +4,7 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { UserReturnDTO } from '../interface/usuario';
 import { OrderReturnDTO } from '../interface/order';
 import { CoffeeReturnDTO } from '../interface/coffes';
+import { OrdersDetailsInsertDTO, OrdersDetailsReturnDTO } from '../interface/ordersDetails';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,22 @@ export class BackendServiceService {
   private loginUrl = 'users/'
   private orderUrl = 'orders/'
   private productUrl = 'products/'
+  private orderDetailsUrl = 'ordersDetails/'
+  private sizeUrl = 'sizes/'
 
   constructor(private _http: HttpClient) { }
 
+
+  //Get id size by name: 
+  getIdSizeByName(name: string) : Observable<number> {
+    return this._http.get<number>(`${this.baseUrl}${this.sizeUrl}getIdByName`, {
+      params: {
+        sizeName: name
+      }
+    });
+  }
+
+  //Obtiene una lista de cafes por categoria    
   getProductsByCategory(category: string) : Observable<CoffeeReturnDTO[]> {
     return this._http.get<CoffeeReturnDTO[]>(`${this.baseUrl}${this.productUrl}${category}`).pipe(
       catchError((error) => {
@@ -41,5 +55,7 @@ export class BackendServiceService {
     );
   }
 
-
+  addOrderDetails(orderDetails: OrdersDetailsInsertDTO): Observable<OrdersDetailsReturnDTO> {
+    return this._http.post<OrdersDetailsReturnDTO>(`${this.baseUrl}${this.orderDetailsUrl}addOrderDetails`, orderDetails)
+  }
 }
