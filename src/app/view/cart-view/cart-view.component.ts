@@ -24,26 +24,29 @@ import { CartServiceService } from '../../services/cart-service.service';
         <h1 class="font-bold text-2xl">Mi Carrito</h1>
       </header>  
       
-      <div class="flex flex-col gap-4 items-center">  
+      <div class="flex flex-col gap-4 items-center ">  
         @for (item of cardItemsList ; track $index ) {
-        <div class="flex flex-col items-center bg-white rounded-xl shadow-md p-4  md:flex-row md:max-w-xl ">
-        <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="/docs/images/blog/image-4.jpg" alt="">
-        <div class="flex flex-col justify-between p-4 leading-normal">
-          <div class="flex flex-row items-center space-x-10">
-            <h5 class="mb-2 text-lg font-bold tracking-tight text-gray-700">
-              {{getCoffeInCoffes(item.orderDetails.ProductId)?.Name || 'N/A'}}
-            </h5>
-            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900">MXM {{item.orderDetails?.Price || 'N/A'}}</h5>
-          </div>
-          <div class="flex flex-row space-x-10">
-            <app-cantidad-widget [initialQuantity$]="item.orderDetails.Quantity" (quantityChange$)="onQuantityChange($event, $index)"></app-cantidad-widget>
-            <button (click)="onRemoveItem($index)" class="text-red-500 hover:text-red-700">
-              <img class="w-7 h-7" src="../../assets/delete_forever.svg" alt="borrar">
-            </button>
+        <div class="flex flex-col justify-between items-center bg-white rounded-xl shadow-md p-4  md:flex-row w-3/5 ">
+          <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="/docs/images/blog/image-4.jpg" alt="">
+          
+          <div class="flex flex-col justify-between align-center p-4 leading-normal w-full">
+            <div class="flex flex-row items-center space-x-10">
+              <h5 class=" text-lg font-bold tracking-tight text-gray-700">
+                {{getCoffeInCoffes(item.orderDetails.ProductId)?.Name || 'N/A'}}
+              </h5>
+              <h5 class=" text-xl font-bold tracking-tight text-gray-900">MXM {{item.orderDetails?.Price || 'N/A'}}</h5>
+            </div>
+            <div class="flex flex-row space-x-10">
+              <app-cantidad-widget [initialQuantity$]="item.orderDetails.Quantity" (quantityChange$)="onQuantityChange($event, $index)"></app-cantidad-widget>
+              <button (click)="onRemoveItem($index)" class="text-red-500 hover:text-red-700">
+                <img class="w-7 h-7" src="../../assets/delete_forever.svg" alt="borrar">
+              </button>
+            </div>
           </div>
         </div>
-    </div>
-  }          
+      }           
+      
+      
   </div> 
   </section>
   `,
