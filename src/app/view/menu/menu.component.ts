@@ -7,7 +7,7 @@ import { CoffeeReturnDTO } from "../../interface/coffes";
 import { catchError, Observable, tap, throwError } from "rxjs";
 import { AsyncPipe } from '@angular/common';
 import { BadgeComponent } from "./components/badge/badge.component";
-import { ViewCardComponent } from "./components/view-card/view-card.component";
+import { ViewCardComponent } from "./components/view-cart-button/view-cart-button.component";
 import { UserWithOrderAndOrderDetail } from "../../interface/userWithOrderAndOrderDetail";
 import { CartServiceService } from "../../services/cart-service.service";
 
