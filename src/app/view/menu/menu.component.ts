@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Type } from "@angular/core";
+import { Component, inject, OnInit, signal, Type } from "@angular/core";
 import { HeaderComponent } from "../../layouts/header/header.component";
 import { SearchBarComponent } from "./components/search-bar/search-bar.component";
 import { CardComponent } from "./components/card/card.component";
@@ -43,9 +43,13 @@ import { CartServiceService } from "../../services/cart-service.service";
 
           <!-- Categories -->
           <div class="flex gap-4 mb-6 overflow-x-auto py-2">
-            <app-badge [text$]="'Todos'"></app-badge>
-            <app-badge [text$]="'Desarrollo'"></app-badge>
-            <app-badge [text$]="'Diseño'"></app-badge>
+            @for (category of categories; track $index) {
+              <app-badge
+                [text$]="category.name"
+                [isActive$]="selectedCategory() === category.name"
+                (click)="onCategorySelect(category.name)">
+              </app-badge>
+            }
           </div>
 
           <!-- Todos cafes -->
@@ -94,10 +98,18 @@ import { CartServiceService } from "../../services/cart-service.service";
   styles: ``,
 })
 export class MenuComponent implements OnInit {
+
   backendService = inject(BackendServiceService);
   coffes$!: Observable<CoffeeReturnDTO[] | null>;;
   cartItemsList: UserWithOrderAndOrderDetail[] = []
   cartService = inject(CartServiceService)
+  selectedCategory = signal("Cafes")
+  
+  categories = [
+    { id: 1, name: 'Cafes' },
+    { id: 2, name: '(Desarrollo)' },
+    { id: 3, name: '(Desarrollo1)' }
+  ];
 
   constructor() { }
 
@@ -143,5 +155,9 @@ export class MenuComponent implements OnInit {
     this.cartItemsList = items
     console.log('Items del carrito:', items)
   };
+
+  onCategorySelect(category: string): void {
+    this.selectedCategory.set(category)
+  }
 
 }
