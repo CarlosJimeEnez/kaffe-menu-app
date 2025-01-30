@@ -9,6 +9,7 @@ import { AsyncPipe } from '@angular/common';
 import { BadgeComponent } from "./components/badge/badge.component";
 import { ViewCardComponent } from "./components/view-card/view-card.component";
 import { UserWithOrderAndOrderDetail } from "../../interface/userWithOrderAndOrderDetail";
+import { CartServiceService } from "../../services/cart-service.service";
 
 @Component({
   selector: "app-menu",
@@ -65,8 +66,8 @@ import { UserWithOrderAndOrderDetail } from "../../interface/userWithOrderAndOrd
             </div>
           </div>
 
-          @if (cardItemSessionStorage !== null) {
-            <app-view-card [quantity$]="this.cardItemsList.length"></app-view-card>
+          @if (cartItemsList.length > 0) {
+            <app-view-card [quantity$]="cartItemsList.length"></app-view-card>
           }
 
           <!-- Best Matches Section -->
@@ -113,8 +114,9 @@ import { UserWithOrderAndOrderDetail } from "../../interface/userWithOrderAndOrd
 export class MenuComponent implements OnInit {
   backendService = inject(BackendServiceService);
   coffes$!: Observable<CoffeeReturnDTO[] | null>; ;
-  cardItemSessionStorage!: UserWithOrderAndOrderDetail | null;
-  cardItemsList: UserWithOrderAndOrderDetail[] = []
+  cartItemsList: UserWithOrderAndOrderDetail[] = []
+  cartService = inject(CartServiceService)
+
   constructor() {}
 
   //Carga los cafes
@@ -122,31 +124,23 @@ export class MenuComponent implements OnInit {
     this.coffes$ = this.backendService
       .getProductsByCategory("cafe")
       .pipe(
-        tap((coffes) => console.log("Cafes cargados:", coffes)),
+        tap((coffes) => {
+          console.log("Cafes cargados:", coffes)
+          sessionStorage.setItem("coffes", JSON.stringify(coffes));
+        }),
         catchError((error) => {
           console.error("Error loading coffes", error);
           return throwError(() => new Error("Failed to load coffes"));
         })
       );
 
-      const existingItems = sessionStorage.getItem('ListCardItems');
-      this.cardItemsList = existingItems ? JSON.parse(existingItems) : [];
-
-      // Obtener el nuevo item si existe
-      const cardItemsJSON = sessionStorage.getItem('userWithOrderAndOrderDetail');
-      this.cardItemSessionStorage = cardItemsJSON ? JSON.parse(cardItemsJSON) : null;
-
-      //Verificar si el item ya existe en la lista
-      if(this.cardItemSessionStorage){
-        const isDuplciated = this.cardItemsList.some(item => JSON.stringify(item) === JSON.stringify(this.cardItemSessionStorage))
-
-        if(!isDuplciated){
-          this.cardItemsList.push(this.cardItemSessionStorage)
-          sessionStorage.setItem('ListCardItems', JSON.stringify(this.cardItemsList))
-        }
-      };
-
-      console.log('ListCardItems', this.cardItemsList)
-      
+    this.getCartItems();
   }
+
+  getCartItems(): void {
+    const items = this.cartService.getItems()
+    this.cartItemsList = items
+    console.log('Items del carrito:', items)
+  };
+
 }

@@ -39,6 +39,10 @@ export class BackendServiceService {
     );
   }
 
+  getProductsById(id: number) : Observable<CoffeeReturnDTO> {
+    return this._http.get<CoffeeReturnDTO>(`${this.baseUrl}${this.productUrl}${id}`)
+  }
+
   //Crea un usuario invitado
   addGuestUser() : Observable<UserReturnDTO>{
     return this._http.post<UserReturnDTO>(`${this.baseUrl}${this.loginUrl}addGuest`, {})

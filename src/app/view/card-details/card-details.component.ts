@@ -5,11 +5,12 @@ import { BadgeCustomComponent } from "./components/badge-custom/badge-custom.com
 import { FormBuilder, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductPrice } from '../../interface/productPrice';
-import { CantidadWidgetComponent } from "./components/cantidad-widget/cantidad-widget.component";
+import { CantidadWidgetComponent } from "../../components/cantidad-widget/cantidad-widget.component";
 import { OrdersDetailsInsertDTO, OrdersDetailsReturnDTO } from '../../interface/ordersDetails';
 import { catchError, map, Observable, switchMap, tap, throwError } from 'rxjs';
 import { BackendServiceService } from '../../services/backend-service.service';
 import { RequestStatus } from '../../interface/requestStatus';
+import { CartServiceService } from '../../services/cart-service.service';
 @Component({
   selector: 'app-card-details',
   standalone: true,
@@ -127,6 +128,7 @@ export class CardDetailsComponent {
   router = inject(Router)
   coffee: CoffeeReturnDTO | null = null;
   formBuilder = inject(FormBuilder)
+  cartService = inject(CartServiceService)
   required: boolean = false
   quantity$ = signal<number>(1);
   isSubmitted = signal<boolean>(false);
@@ -210,13 +212,14 @@ export class CardDetailsComponent {
             console.log('Respuesta del backend:', response);
           }),
           map((orderDetail) => (
-            {user: JSON.parse(sessionStorage.getItem('userWithOrder') || '{}').user,
+            {
+              user: JSON.parse(sessionStorage.getItem('userWithOrder') || '{}').user,
               order: JSON.parse(sessionStorage.getItem('userWithOrder') || '{}').order,
-              orderDetail}
+              orderDetails: orderDetail
+            }
           )),
           tap((combined) => {
-            console.log('Datos combinados:', combined);
-            sessionStorage.setItem("userWithOrderAndOrderDetail", JSON.stringify(combined));
+            this.cartService.addItem(combined)
           })
             
         ).subscribe(() => {

@@ -7,10 +7,10 @@ export interface OrdersDetailsInsertDTO {
 }
 
 export interface OrdersDetailsReturnDTO {
-    id: number,
-    orderId: number,
-    price: number,
-    productId: number,
-    sizeId: number,
-    quantity: number
+    Id: number,
+    OrderId: number,
+    Price: number,
+    ProductId: number,
+    SizeId: number,
+    Quantity: number
 }
