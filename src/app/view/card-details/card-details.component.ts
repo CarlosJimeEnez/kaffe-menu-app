@@ -93,15 +93,14 @@ import { CartServiceService } from '../../services/cart-service.service';
                 <app-cantidad-widget [initialQuantity$]="this.quantity$()" (quantityChange$)="onQuantityChange($event)"></app-cantidad-widget>
 
               </section>   
-              <div class="flex flex-col justify-around items-center text-xl font-bold leading-none">
-              <button (click)="onSubmitProduct()" class="p-4 border rounded-lg p-3 bg-accent-500 text-white  hover:bg-accent-600">
-                <h3 class="p-2">Añadir <span>( {{this.quantity$()}} )</span> a el carrito</h3>
-                <div class="pb-2">-</div>
-                <div>
-                   <p>MXM {{(this.coffeForm.value.price || 0) * this.quantity$()}}</p> 
+              <div class="flex flex-row justify-around items-center text-xl font-bold leading-none w-full">
+                <button (click)="onSubmitProduct()" class="flex flex-row justify-center items-center p-4 border rounded-lg  bg-accent-500 text-white hover:bg-accent-600">
+                  <h3 class="p-2">Añadir <span>( {{this.quantity$()}} )</span> a el carrito</h3> 
+                  <div>
+                    <p>- MXM {{(this.coffeForm.value.price || 0) * this.quantity$()}}</p> 
                   </div>
-              </button> 
-            </div> 
+                </button> 
+              </div> 
             </div>
             
 
