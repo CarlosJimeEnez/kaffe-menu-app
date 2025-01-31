@@ -27,11 +27,11 @@ import { CartServiceService } from '../../services/cart-service.service';
       <div class="flex flex-col gap-4 items-center ">  
         @for (item of cardItemsList ; track $index ) {
         <div class="flex flex-col justify-between items-center bg-white rounded-xl shadow-md p-4  md:flex-row w-3/5 ">
-          <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="/docs/images/blog/image-4.jpg" alt="">
+          <img class="object-cover w-full border rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="/docs/images/blog/image-4.jpg" alt="">
           
-          <div class="flex flex-col justify-between align-center p-4 leading-normal w-full">
-            <div class="flex flex-row items-center space-x-10">
-              <h5 class=" text-lg font-bold tracking-tight text-gray-700">
+          <div class="flex flex-col justify-between align-center p-4 leading-normal">
+            <div class="flex flex-row items-center justify-start space-x-10">
+              <h5 class=" text-xl font-bold tracking-tight text-gray-700">
                 {{getCoffeInCoffes(item.orderDetails.ProductId)?.Name || 'N/A'}}
               </h5>
               <h5 class=" text-xl font-bold tracking-tight text-gray-900">MXM {{item.orderDetails?.Price || 'N/A'}}</h5>
