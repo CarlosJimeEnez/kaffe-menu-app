@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CantidadWidgetComponent } from "../../components/cantidad-widget/cantidad-widget.component";
 import { UserWithOrderAndOrderDetail } from '../../interface/userWithOrderAndOrderDetail';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { CoffeeReturnDTO } from '../../interface/coffes';
 import { BackendServiceService } from '../../services/backend-service.service';
 import { AsyncPipe } from '@angular/common';
@@ -45,6 +45,9 @@ import { CartServiceService } from '../../services/cart-service.service';
           </div>
         </div>
       }           
+      <button (click)="onCartPurchase()" class="hover:bg-accent-600 absolute bottom-5 right-10 rounded-xl p-5 text-white font-bold text-2xl bg-accent-400">
+        Comprar
+      </button>
       
       
   </div> 
@@ -53,6 +56,7 @@ import { CartServiceService } from '../../services/cart-service.service';
   styles: ``
 })
 export class CartViewComponent implements OnInit {
+  router = inject(Router)
   cardItemsList: UserWithOrderAndOrderDetail[] = []
   coffes: CoffeeReturnDTO[] = []
   product$!: Observable<CoffeeReturnDTO>
@@ -85,5 +89,19 @@ export class CartViewComponent implements OnInit {
   onRemoveItem(index: number) {
     this.cardItemsList.splice(index, 1)
     sessionStorage.setItem('ListCardItems', JSON.stringify(this.cardItemsList))
+  }
+
+  onCartPurchase() {
+    console.log('Compra:', this.cardItemsList)
+    this.backendService.addPurchase(this.cardItemsList).pipe(
+      tap((response) => {
+        console.log('Respuesta del backend:', response);
+        this.router.navigate(['/menu'])
+      }),
+      catchError((error) => {
+        console.error('Error en la solicitud:', error);
+        return throwError(() => new Error('Failed to create order'));
+      })
+    ).subscribe()
   }
 }

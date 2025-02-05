@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
+import { UserWithOrderAndOrderDetail } from '../interface/userWithOrderAndOrderDetail';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartServiceService {
-  private cartItems: any[] = [];
+  private cartItems: UserWithOrderAndOrderDetail[] = [];
   constructor() { }
 
-  addItem(item: any) {
+  addItem(item: UserWithOrderAndOrderDetail) {
     this.cartItems.push(item);
   }
 

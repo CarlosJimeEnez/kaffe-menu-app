@@ -5,6 +5,7 @@ import { UserReturnDTO } from '../interface/usuario';
 import { OrderReturnDTO } from '../interface/order';
 import { CoffeeReturnDTO } from '../interface/coffes';
 import { OrdersDetailsInsertDTO, OrdersDetailsReturnDTO } from '../interface/ordersDetails';
+import { UserWithOrderAndOrderDetail } from '../interface/userWithOrderAndOrderDetail';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class BackendServiceService {
   private productUrl = 'products/'
   private orderDetailsUrl = 'ordersDetails/'
   private sizeUrl = 'sizes/'
-
+  private cartDetailsUrl = 'cartDetails/'
   constructor(private _http: HttpClient) { }
 
 
@@ -62,4 +63,9 @@ export class BackendServiceService {
   addOrderDetails(orderDetails: OrdersDetailsInsertDTO): Observable<OrdersDetailsReturnDTO> {
     return this._http.post<OrdersDetailsReturnDTO>(`${this.baseUrl}${this.orderDetailsUrl}addOrderDetails`, orderDetails)
   }
+
+  addPurchase(userWithOrderAndOrderDetail: UserWithOrderAndOrderDetail[]):Observable<UserWithOrderAndOrderDetail[]>{
+    return this._http.post<UserWithOrderAndOrderDetail[]>(`${this.baseUrl}${this.cartDetailsUrl}addCartDetails`, userWithOrderAndOrderDetail)
+  }
+
 }
