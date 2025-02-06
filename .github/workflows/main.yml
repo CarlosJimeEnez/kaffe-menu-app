@@ -27,7 +27,13 @@ jobs:
           node-version: 20
           cache: 'pnpm'  # Habilita caching para pnpm
 
-      # 3. Instalar dependencias
+      - name: Install Rust targets
+        run: |
+          rustup target add ${{ matrix.target }}
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64  # Solo para Windows en Linux
+      
+          # 3. Instalar dependencias
       - name: Install dependencies
         run: pnpm install
 
@@ -36,7 +42,7 @@ jobs:
         run: pnpm add @tauri-apps/cli@next -D
 
       - name: Build App
-        run: pnpm tauri build --target all
+        run: pnpm tauri build --target ${{ matrix.target }}
         env:
           TAURI_UPDATER_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }}
           TAURI_UPDATER_KEY_PASSWORD: ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }}
