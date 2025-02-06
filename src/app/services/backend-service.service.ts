@@ -11,7 +11,7 @@ import { UserWithOrderAndOrderDetail } from '../interface/userWithOrderAndOrderD
   providedIn: 'root'
 })
 export class BackendServiceService {
-  private baseUrl = 'http://localhost:5050/';
+  private baseUrl = 'https://kaffeserver-production.up.railway.app/';
   private loginUrl = 'users/'
   private orderUrl = 'orders/'
   private productUrl = 'products/'
