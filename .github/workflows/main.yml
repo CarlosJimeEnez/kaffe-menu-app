@@ -8,9 +8,6 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    strategy:
-          matrix:
-            target: [x86_64-pc-windows-msvc, x86_64-apple-darwin, x86_64-unknown-linux-gnu]
     steps:
       - uses: actions/checkout@v4
 
@@ -19,7 +16,6 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false  # Importante para controlar el orden
 
       # 2. Configurar Node.js después
       - uses: actions/setup-node@v4
@@ -29,20 +25,23 @@ jobs:
 
       - name: Install Rust targets
         run: |
-          rustup target add ${{ matrix.target }}
+          rustup target add x86_64-pc-windows-msvc
+          rustup target add x86_64-unknown-linux-gnu
           sudo apt-get update
-          sudo apt-get install -y mingw-w64  # Solo para Windows en Linux
+          sudo apt-get install -y mingw-w64  # Necesario para compilar Windows en Linux
       
           # 3. Instalar dependencias
       - name: Install dependencies
         run: pnpm install
 
-      # Resto del workflow igual...
-      - name: Install Tauri CLI
-        run: pnpm add @tauri-apps/cli@next -D
+      - name: Build Windows
+        run: pnpm tauri build --target x86_64-pc-windows-msvc
+        env:
+          TAURI_UPDATER_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }}
+          TAURI_UPDATER_KEY_PASSWORD: ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }}
 
-      - name: Build App
-        run: pnpm tauri build --target ${{ matrix.target }}
+      - name: Build Linux
+        run: pnpm tauri build --target x86_64-unknown-linux-gnu
         env:
           TAURI_UPDATER_PRIVATE_KEY: ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }}
           TAURI_UPDATER_KEY_PASSWORD: ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }}
@@ -52,23 +51,20 @@ jobs:
           VERSION=$(echo ${{ github.ref_name }} | sed 's/v//')
           PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           
-          # Generar firmas para todos los targets
-          SIGNATURE_WIN=$(pnpm tauri plugin updater sign -w ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }} -P ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }} ./src-tauri/target/release/bundle/msi/APPNAME_${VERSION}_x64.msi)
-          SIGNATURE_MAC=$(pnpm tauri plugin updater sign -w ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }} -P ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }} ./src-tauri/target/release/bundle/macos/APPNAME.app.tar.gz)
-          SIGNATURE_LINUX=$(pnpm tauri plugin updater sign -w ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }} -P ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }} ./src-tauri/target/release/bundle/deb/APPNAME_${VERSION}_amd64.deb)
+          # Firmar Windows
+          SIGNATURE_WIN=$(pnpm tauri plugin updater sign -w ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }} -P ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }} ./src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/APPNAME_${VERSION}_x64.msi)
+
+          # Firmar Linux
+          SIGNATURE_LINUX=$(pnpm tauri plugin updater sign -w ${{ secrets.TAURI_UPDATER_PRIVATE_KEY }} -P ${{ secrets.TAURI_UPDATER_KEY_PASSWORD }} ./src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/APPNAME_${VERSION}_amd64.deb)
 
           echo '{
             "version": "'$VERSION'",
-            "notes": "Actualización multi-plataforma",
+            "notes": "Actualización Windows + Linux",
             "pub_date": "'$PUB_DATE'",
             "platforms": {
               "windows-x86_64": {
                 "signature": "'$SIGNATURE_WIN'",
                 "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/APPNAME_${VERSION}_x64.msi"
-              },
-              "darwin-x86_64": {
-                "signature": "'$SIGNATURE_MAC'",
-                "url": "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/APPNAME_${VERSION}_x64.app.tar.gz"
               },
               "linux-x86_64": {
                 "signature": "'$SIGNATURE_LINUX'",
@@ -81,9 +77,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            src-tauri/target/release/bundle/msi/*.msi
-            src-tauri/target/release/bundle/macos/*.tar.gz
-            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/*.msi
+            src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/*.deb
             latest.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
