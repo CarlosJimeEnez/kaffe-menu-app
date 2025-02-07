@@ -8,7 +8,7 @@ import { Router } from "@angular/router";
   imports: [],
   template: `
     <section class="">
-      <div (click)="navigateToCoffee()" class="bg-white rounded-xl shadow-md p-4 hover:bg-background-100">
+      <div class="bg-white rounded-xl shadow-md p-4 hover:bg-background-100">
         <img class="object-cover w-full h-32 rounded-lg mb-3" src="" alt="imagen cafe">
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-xl text-text-700">{{coffee$().Name}}</h3>
@@ -22,7 +22,7 @@ import { Router } from "@angular/router";
         <h5 class="text-md text-text-400 h-12 overflow-hidden">{{coffee$().Description }}</h5>
         <div class="flex justify-between items-center mt-2">
           <span class="font-medium text-accent-500">{{coffee$().Prices[0].Price }} mxm</span>
-          <button class="px-4 py-2 bg-accent-500 text-white rounded-lg text-md hover:bg-accent-700">Add</button>
+          <button  (click)="navigateToCoffee()" class="px-4 py-2 bg-accent-500 text-white rounded-lg text-md hover:bg-accent-700">Add</button>
         </div> 
       </div>
     </section> 
